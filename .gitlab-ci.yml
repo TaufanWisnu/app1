@@ -1,0 +1,26 @@
+stages:
+    - build
+    - deploy
+build:
+    stage: build
+    tags: [docker-runner-01]
+    when: on_success
+    only:
+        - main
+    image: docker:stable
+    services:
+        - docker:dind
+    script:
+        - docker login -u deploy-token-to-registry -p $CI_REGISTRY 157.245.152.251:5005
+        - docker build -t 157.245.152.251:5005/taufan/app1 ./dockerfile/app1
+        - docker push 157.245.152.251:5005/taufan/app1
+#deploy:
+#    stage: deploy
+#    tags: [docker-runner-2]
+#    script:
+#        - docker login -u deploy-token-to-registry -p $CI_TOKEN 192.168.60.144:5005
+#        - docker pull 192.168.60.144:5005/taufan/app1
+#        - docker images
+#        - docker kill app1 php-fpm || true
+#        - docker rm app1 php-fpm || true
+#        - docker run --name app1 -p 80:80 -d 192.168.60.144:5005/taufan/app1
